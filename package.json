@@ -19,6 +19,8 @@
   "homepage": "https://github.com/TrixDah/nanajuliansbakery.com#readme",
   "dependencies": {
     "@serenity-kit/opaque": "^1.1.0",
-    "esbuild": "^0.28.2"
-  }
+    "esbuild": "^0.28.2",
+    "libsodium-wrappers": "^0.8.4"
+  },
+  "type": "module"
 }
