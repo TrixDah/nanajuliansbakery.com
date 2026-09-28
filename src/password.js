@@ -18,7 +18,7 @@ async function post(path, body) {
 
 export async function changePassword(identity, oldPw, newPw) {
   await opaque.ready;
-  if (typeof newPw !== "string" || newPw.length < 12) return false;
+  if (typeof newPw !== "string" || newPw.length === 0) return false;
 
   const other = identity === "user1" ? "user2" : "user1";
   if (await loginAs(other, newPw)) { await logout(); return false; }
