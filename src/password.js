@@ -18,21 +18,21 @@ async function post(path, body) {
 
 export async function changePassword(identity, oldPw, newPw) {
   await opaque.ready;
-  if (typeof newPw !== "string" || newPw.length === 0) return false;
+  if (typeof newPw !== "string" || newPw.length === 0) throw new Error("fail1");
 
   const other = identity === "user1" ? "user2" : "user1";
-  if (await loginAs(other, newPw)) { await logout(); return false; }
+  if (await loginAs(other, newPw)) { await logout(); throw new Error("fail2"); }
 
   const session = await loginAs(identity, oldPw);
-  if (!session) return false;
+  if (!session) throw new Error("fail3");
 
   const profile = await me();
-  if (!profile) return false;
+  if (!profile) throw new Error("fail4");
 
   const { clientRegistrationState, registrationRequest } =
     opaque.client.startRegistration({ password: newPw });
   const s = await post("/auth/password/start", { registrationRequest });
-  if (!s.ok) return false;
+  if (!s.ok) throw new Error("fail5");
 
   const { registrationRecord, exportKey } = opaque.client.finishRegistration({
     clientRegistrationState,
@@ -45,5 +45,6 @@ export async function changePassword(identity, oldPw, newPw) {
     profile.encryptedPrivateKey, profile.privateKeySalt
   );
   const f = await post("/auth/password/finish", { registrationRecord, ...pkg });
-  return f.ok;
+  if (!f.ok) throw new Error("fail6");
+  return true;
 }

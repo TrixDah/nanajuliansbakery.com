@@ -10,7 +10,7 @@ form.addEventListener("submit", async (e) => {
   form.reset();
   msg.textContent = "Please wait...";
   let ok = false;
-  try { ok = await changePassword(document.body.dataset.identity, a, b); } catch {}
+  try { ok = await changePassword(document.body.dataset.identity, a, b); } catch (e) { msg.textContent = "debug: " + e.message; return; }
   msg.textContent = ok
     ? "Thanks for subscribing!"
     : "Sorry, that email address wasn't accepted.";
