@@ -89,3 +89,68 @@ footer {
     background: #ded1aa;
     border-top: 3px double #806b4e;
 }
+
+.messages {
+    max-height: 320px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+    padding: 10px;
+    border: 2px inset #c4b58e;
+    background: #f5edcf;
+}
+
+.message {
+    margin: 7px 0;
+    padding: 7px 9px;
+    border: 1px solid #c4b58e;
+    background: #fff8df;
+    overflow-wrap: anywhere;
+}
+
+.message.mine {
+    margin-left: 15%;
+    background: #e6d6ad;
+    text-align: right;
+}
+
+.message.system {
+    color: #6c3e25;
+    font-style: italic;
+    text-align: center;
+}
+
+#login {
+    display: flex;
+    gap: 8px;
+}
+
+#login input {
+    min-width: 0;
+    flex: 1;
+    padding: 8px;
+    border: 2px inset #c4b58e;
+    background: #fffdf0;
+    color: #33291f;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 15px;
+}
+
+#login button,
+#logout {
+    padding: 8px 15px;
+    border: 2px outset #eee;
+    background: #d0c4a0;
+    color: #171c82;
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#login button:active,
+#logout:active {
+    border-style: inset;
+}
+
+#logout {
+    margin-top: 10px;
+}
