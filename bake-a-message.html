@@ -4,15 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#d6d0b8">
+  <meta name="description" content="End-to-end encrypted messages for the Flourlands.">
   <title>Nana Julian's Bake A Message</title>
   <link rel="stylesheet" href="assets/style.css">
-  <script src="assets/community.js" defer></script>
+  <link rel="stylesheet" href="assets/chat.css">
+  <script src="assets/chat-crypto.js" defer></script>
+  <script src="assets/chat.js" defer></script>
 </head>
 <body>
   <div class="page">
     <header>
       <div class="logo">📯 Nana Julian's Bake A Message 🥖</div>
-      <p class="tagline">The Village Noticeboard — pin a note, mind the crumbs</p>
+      <p class="tagline">The encrypted village noticeboard — private crumbs stay private</p>
       <nav aria-label="Main navigation">
         <a href="index.html">Kingdom Map</a>
         <a href="index.html#how-to-play">How to Play</a>
@@ -21,27 +24,125 @@
         <a href="bake-a-message.html" aria-current="page">Nana Julian's Bake A Message</a>
       </nav>
     </header>
-    <main>
-      <section class="welcome">
-        <div class="blink-label">★ NOTICEBOARD OPEN ★</div>
-        <h1>Leave a Message for the Flourlands</h1>
-        <p>Pin a friendly note, announce a bake sale, or spread harmless village gossip.</p>
-        <div class="save-warning">LOCAL NOTICEBOARD: messages are saved only in this browser. They are not sent to other players or uploaded to a server.</div>
+
+    <main class="chat-page">
+      <section class="welcome chat-welcome">
+        <div class="blink-label">★ THE VILLAGE CHAT ★</div>
+        <h1>Bake A Message</h1>
+        <p>Join the Village Square, message a baker directly, or create a private group.</p>
+        <div class="chat-security-note"><strong>End-to-end encrypted message content.</strong> Messages are encrypted in this browser before upload. The server still sees account email, room membership, sender, timestamps and message sizes. Keep your recovery code and encrypted recovery file somewhere safe.</div>
       </section>
-      <section class="old-box community-page">
-        <form id="message-form" class="message-form">
-          <label for="message-name">Baker's name</label>
-          <input id="message-name" name="name" maxlength="32" placeholder="Anonymous Baker" autocomplete="nickname">
-          <label for="message-body">Your message</label>
-          <textarea id="message-body" name="message" maxlength="280" rows="3" required placeholder="Pin your notice to the board..."></textarea>
-          <div class="message-form-footer"><small>280 characters maximum</small><button class="button" type="submit">Pin Message</button></div>
-          <p id="message-feedback" class="tiny-note" role="status" aria-live="polite"></p>
+
+      <section id="auth-section" class="old-box chat-auth" aria-labelledby="auth-title">
+        <h2 id="auth-title">Sign in by email code</h2>
+        <p>No password. We'll email you a one-time code.</p>
+
+        <form id="login-form" class="chat-form">
+          <label for="login-email">Email address</label>
+          <input id="login-email" name="email" type="email" maxlength="254" autocomplete="email" required placeholder="baker@example.com">
+          <button class="button" id="request-code" type="submit">Email me a code</button>
         </form>
-        <h2>Messages from the Flourlands</h2>
-        <p id="message-board-empty" class="paper-notice">The board is empty. Be the first to leave a note.</p>
-        <ol id="message-list" class="message-list" aria-live="polite"></ol>
+
+        <form id="verify-form" class="chat-form" hidden>
+          <p id="code-prompt" class="paper-notice">Enter the six-digit code sent to your email.</p>
+          <label for="login-code">One-time code</label>
+          <input id="login-code" name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" required placeholder="123456">
+          <div class="chat-form-row"><button class="button" id="verify-code" type="submit">Verify &amp; sign in</button><button class="text-button" id="change-email" type="button">Use another email</button></div>
+        </form>
+
+        <div id="key-setup" class="key-panel" hidden>
+          <h3>Save your encrypted recovery kit</h3>
+          <p>This account has no encryption keys yet. Your browser has made a private key pair; the private keys will never be uploaded. Save both items below before continuing.</p>
+          <ol>
+            <li>Download the encrypted recovery file.</li>
+            <li>Save the recovery code separately. Anyone with both items can restore this account's keys.</li>
+          </ol>
+          <label for="recovery-code-display">Recovery code (shown only during setup)</label>
+          <div class="recovery-code-row"><code id="recovery-code-display" class="recovery-code"></code><button id="copy-recovery-code" class="button secondary" type="button">Copy code</button></div>
+          <button id="download-first-backup" class="button" type="button">Download encrypted recovery file</button>
+          <label class="acknowledge"><input id="recovery-saved" type="checkbox"> I saved the recovery file and the separate recovery code.</label>
+          <button id="finish-key-setup" class="button" type="button" disabled>Save keys on this device &amp; continue</button>
+        </div>
+
+        <div id="key-recovery" class="key-panel" hidden>
+          <h3>Restore this device's encryption keys</h3>
+          <p>This account already has encryption keys, but this browser does not have the private key. Select the recovery file and enter its separate recovery code. Without both, old messages cannot be decrypted.</p>
+          <form id="recovery-form" class="chat-form">
+            <label for="recovery-file">Encrypted recovery file</label>
+            <input id="recovery-file" type="file" accept="application/json,.json" required>
+            <label for="recovery-code-input">Recovery code</label>
+            <input id="recovery-code-input" autocomplete="off" spellcheck="false" required maxlength="100" placeholder="Paste the recovery code">
+            <button class="button" id="restore-keys" type="submit">Decrypt &amp; restore keys</button>
+          </form>
+        </div>
+
+        <p id="auth-feedback" class="tiny-note" role="status" aria-live="polite"></p>
+      </section>
+
+      <section id="chat-app" class="old-box chat-app" hidden>
+        <div class="chat-toolbar">
+          <div class="profile-identity">
+            <strong id="signed-in-name">Signed in</strong><span id="signed-in-email" class="tiny-note"></span>
+            <details class="profile-settings">
+              <summary>Edit display name</summary>
+              <form id="profile-form" class="profile-form">
+                <label class="visually-hidden" for="profile-name">Display name</label>
+                <input id="profile-name" maxlength="32" required placeholder="Village baker name">
+                <button class="button secondary" type="submit">Save name</button>
+              </form>
+            </details>
+          </div>
+          <div class="chat-toolbar-actions"><button id="download-backup" class="button secondary" type="button">Download recovery file</button><button id="logout" class="button secondary" type="button">Sign out</button></div>
+        </div>
+        <p id="app-status" class="chat-status" role="status" aria-live="polite"></p>
+
+        <div class="chat-layout">
+          <aside class="chat-sidebar" aria-label="Chat rooms and people">
+            <h2>Rooms</h2>
+            <button id="new-group-toggle" class="button" type="button">+ Create group</button>
+
+            <form id="group-form" class="group-create" hidden>
+              <label for="group-name">Group name</label>
+              <input id="group-name" maxlength="48" required placeholder="The Flour Council">
+              <p class="tiny-note">Choose at least one other baker. You will be included automatically.</p>
+              <div id="group-member-options" class="member-options"></div>
+              <div class="chat-form-row"><button class="button" type="submit">Create private group</button><button id="cancel-group" class="text-button" type="button">Cancel</button></div>
+            </form>
+
+            <ul id="room-list" class="room-list" aria-label="Your chat rooms"></ul>
+
+            <div class="dm-create">
+              <h3>Message a baker</h3>
+              <label for="dm-person">Choose a person</label>
+              <select id="dm-person"><option value="">Loading bakers…</option></select>
+              <button id="open-dm" class="button secondary" type="button">Open direct message</button>
+              <p class="tiny-note">Email addresses are not shown to other users.</p>
+            </div>
+            <details class="key-directory">
+              <summary>Identity key fingerprints</summary>
+              <p class="tiny-note">Compare a person's fingerprint with them over another trusted channel before sharing sensitive information. A first-time key is not independently verified by the server.</p>
+              <ul id="key-fingerprints" class="fingerprint-list"></ul>
+            </details>
+          </aside>
+
+          <section class="chat-main" aria-label="Conversation">
+            <header class="conversation-header">
+              <div><h2 id="room-title">Village Square</h2><p id="room-subtitle" class="tiny-note">Messages are encrypted on your device.</p></div>
+              <span class="encryption-stamp" title="Encrypted before upload">🔐 E2EE</span>
+            </header>
+            <div class="message-history-actions"><button id="load-older" class="text-button" type="button" hidden>Load older messages</button><span id="history-status" class="tiny-note"></span></div>
+            <ol id="chat-messages" class="chat-messages" aria-label="Messages" aria-live="polite"></ol>
+            <form id="send-form" class="send-form">
+              <label class="visually-hidden" for="message-input">Message</label>
+              <textarea id="message-input" maxlength="4000" rows="3" required placeholder="Write a message… (4000 characters maximum)"></textarea>
+              <div class="send-footer"><span id="message-count" class="tiny-note">0 / 4000</span><button id="send-message" class="button" type="submit">Encrypt &amp; send</button></div>
+            </form>
+          </section>
+        </div>
+        <p class="chat-footnote">Encrypted message content is stored by the server as ciphertext. The server does not provide forward secrecy in this version. Back up your keys before clearing browser data; there is no password reset that can recover lost private keys.</p>
       </section>
     </main>
+
     <footer><p>© Nana Julian's Bakery — Keep it kind, keep it crumbly ☕</p><a href="index.html">Return to the kingdom</a></footer>
   </div>
 </body>
