@@ -1,66 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nana Julian's Bakery</title>
-    <link rel="stylesheet" href="assets/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#d6d0b8">
+  <title>Nana Julian's Bakery: Bread &amp; Battle</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="assets/game.js" defer></script>
 </head>
 <body>
-    <div class="page">
+  <div class="page">
+    <header>
+      <div class="logo">🥖 Nana Julian's Bakery 🥐</div>
+      <p class="tagline">Bread &amp; Battle — a strategic baking adventure!</p>
+      <nav aria-label="Main navigation">
+        <a href="#game">Kingdom Map</a>
+        <a href="#how-to-play">How to Play</a>
+        <a href="#leaderboard">Bread Hoard</a>
+        <a href="daily-bread.html">Nana Julian's Daily Bread</a>
+        <a href="bake-a-message.html">Nana Julian's Bake A Message</a>
+      </nav>
+    </header>
 
-        <header>
-            <div class="logo">🍰 Nana Julian's Bakery 🍪</div>
-            <p class="tagline">Fresh from Nana's kitchen since forever!</p>
+    <main>
+      <section class="welcome">
+        <div class="blink-label">★ WELCOME, BAKER-GENERAL! ★</div>
+        <h1>Claim the Flourlands!</h1>
+        <p>March your rolling-pin brigade across the countryside. Harvest wheat, carry it to a mill, wait for the flour, haul it to a bakery, and turn your deliveries into bread.</p>
+        <p><strong>Remember:</strong> land is claimed by moving your troops there — not by buying it. Every second counts, and an undefended bakery can change hands!</p>
+        <div class="save-warning">LOCAL SINGLE-PLAYER GAME: progress saves in this browser only. Only your homestead is visible at the start. Explore the nine regions to discover terrain and rival factions.</div>
+        <p id="enemy-status" class="tiny-note" role="status">Four rival baker factions are active beyond the fog.</p>
+      </section>
 
-            <nav>
-                <a href="index.html">Home</a>
-                <a href="recipes/cinnamon.html">Cinnamon</a>
-        <a href="recipes/scones.html">Scones</a>
-                <a href="about.html">About</a>
-                <a href="support.html">Customer Support</a>
-            </nav>
-        </header>
+      <section class="resources" aria-label="Kingdom status">
+        <div class="resource"><span class="resource-icon">🍞</span><div><small>BREAD HOARD</small><strong id="bread">12</strong><em id="treasury-status">Treasury: 12 / 30</em><em id="treasury-safe">8 protected · 4 exposed</em></div></div>
+        <div class="resource"><span class="resource-icon">🪖</span><div><small>YOUR TROOPS</small><strong id="troops">10</strong><em id="army-level">Brigade level 1/10</em></div></div>
+        <div class="resource inventory-resource"><span class="resource-icon">🎒</span><div class="inventory-values"><small>BRIGADE INVENTORY</small><div><span>🍞 Bread</span><strong id="inv-bread">0 / 6</strong></div><div><span>🌾 Wheat</span><strong id="inv-wheat">0 / 6</strong></div><div><span>🥣 Flour</span><strong id="inv-flour">0 / 6</strong></div><em id="capacity">Each resource has its own capacity of 6 units.</em><em id="carried-safe">Carried bread: 0 safe · 0 exposed</em></div></div>
+        <div class="resource"><span class="resource-icon">🏴</span><div><small>YOUR PLOTS</small><strong id="land">1</strong><em id="production-status">Explore to expand supply chain</em></div></div>
+      </section>
 
-        <main>
-            <section class="welcome">
-                <h1>Welcome to Nana Julian's Bakery!</h1>
+      <section id="game" class="game-layout">
+        <div class="map-panel old-box">
+          <div class="section-heading">
+            <div><p class="kicker">YOUR KINGDOM</p><h2>🗺️ The Flourlands</h2></div>
+            <div class="map-key"><span><i class="key-owned"></i> Yours</span><span><i class="key-enemy"></i> Rivals</span><span><i class="key-wild"></i> Unclaimed</span></div>
+          </div>
+          <p class="map-help">Only your homestead is revealed at the start. Select a fogged plot and click <strong>March troops here</strong>, or drag the 🪖 badge to a destination. Unknown plots crossed are revealed as you travel.</p>
+          <div class="region-navigation" aria-label="World region navigation">
+            <strong id="region-label">Centre Region · 5 of 9</strong>
+            <span>Each region has its own 9 × 9 map.</span>
+            <div id="region-controls" class="region-controls" role="group" aria-label="Choose a region"></div>
+          </div>
+          <div class="map-wrap">
+            <div id="map" class="map" role="grid" aria-label="Flourlands tile map"></div>
+            <div id="traveller" class="traveller" aria-hidden="true">🪖<b id="traveller-count">10</b></div>
+          </div>
+          <div class="map-footer"><span id="coords">Plot 5, 5</span><span id="map-status">Your troops are ready.</span></div>
+          <div class="legend-note">Travel takes time: roughly 2.2 seconds per grid step. Your whole brigade moves together and reveals each plot as it passes through it. Fields grow only while their owning brigade is stationed there.</div>
+        </div>
 
-                <p>
-                    Pull up a chair, grab a cup of tea, and have a look around.
-                    We've got old-fashioned recipes, bakery stories, and a little
-                    corner for customer support.
-                </p>
+        <aside class="inspect-panel old-box">
+          <p class="kicker">FIELD REPORT</p>
+          <div id="tile-icon" class="tile-illustration">🏡</div>
+          <h2 id="tile-title">Nana's Homestead</h2>
+          <p id="tile-description" class="muted">Your headquarters. Send out your brigade to begin the bread trail.</p>
+          <p id="tile-detail" class="tile-detail">Your base is the beginning of a bakery empire.</p>
+          <div id="activity-box" class="activity-box" aria-live="off">
+            <div class="activity-heading"><span id="activity-label">Waiting for activity</span><strong id="activity-time">—</strong></div>
+            <div class="activity-track"><div id="activity-progress" class="activity-progress"></div></div>
+          </div>
+          <div class="tile-facts">
+            <div><span>Controller</span><strong id="tile-owner">You</strong></div>
+            <div><span>Plot garrison</span><strong id="tile-garrison">Your brigade</strong></div>
+            <div><span>Your army</span><strong id="army-position">At home</strong></div>
+          </div>
+          <div id="actions" class="actions"></div>
+          <p id="notice" class="notice" role="status" aria-live="polite">Your brigade is ready for its first march.</p>
+          <h3 class="mini-heading">Latest news from the kingdom</h3>
+          <ul id="event-log" class="event-log"><li>The Flourlands await their baker-general.</li></ul>
+        </aside>
+      </section>
 
-                <p>
-                    Everything here is made with a little patience and a lot of love.
-                </p>
-            </section>
+      <section id="how-to-play" class="how-to old-box">
+        <h2>📜 Nana's Field Manual</h2>
+        <div class="manual-grid">
+          <article><h3>1. March &amp; explore</h3><p>Only your homestead is visible when you spawn. Your whole brigade travels as one stack; each unknown plot is revealed as the soldiers pass through it. Moving onto unclaimed land claims it without paying bread. Rival baker factions scout, expand, and can attack your holdings.</p></article>
+          <article><h3>2. Three separate inventories</h3><p>The brigade carries bread, wheat and flour in separate inventories, each with its own capacity. Upgrade all three capacities at home. Fields produce wheat only while their owner keeps troops on the plot. Soldiers harvest wheat, carry it to a mill, and unload it. Each wheat becomes one flour. A timed task is cancelled if the brigade leaves before it finishes.</p></article>
+          <article><h3>3. Work, bake &amp; store</h3><p>Milling and baking only progress while the brigade stays at that site and work is enabled. Leaving pauses the process; return and press Start/Resume to continue. Each flour makes one bread, but the bakery stops exactly when its bread storage is full and leaves any extra flour untouched. Only bread can go into the home treasury.</p></article>
+          <article><h3>4. Upgrade &amp; protect</h3><p>Buildings, the brigade, carrying capacities and treasury can be upgraded through ten levels. Troop, carrying-capacity and treasury upgrades are home-only; building upgrades are performed at the site. Two-thirds of treasury bread and one-quarter of carried bread are marked protected. Only bread can be stored in the treasury.</p></article>
+        </div>
+        <p class="tiny-note">Four autonomous rival factions can scout, capture plots, harvest, mill, bake, upgrade, and raid. The game runs entirely in this browser and saves locally.</p>
+      </section>
 
-            <section class="recipe-list">
-                <h2>📖 Nana's Recipe Book</h2>
+      <section id="leaderboard" class="leaderboard old-box">
+        <h2>🏆 The Great Bread Hoard</h2>
+        <p>The richest baker holds the title <strong>Nana Julian's Bakery</strong>. Your score counts treasury bread, bread carried by the brigade, and finished bread waiting at your bakeries. Only bread counts toward your hoard; wheat and flour do not.</p>
+        <table>
+          <thead><tr><th>Rank</th><th>Baker</th><th>Bread held</th></tr></thead>
+          <tbody><tr><td>1</td><td>Your Bakery <span class="you-tag">YOU</span></td><td id="leaderboard-bread">12</td></tr></tbody>
+        </table>
+        <p id="leaderboard-note" class="tiny-note">Your rank is based on bread currently held, so spending it lowers your hoard score. Bakery stock is included in the total.</p>
+      </section>
 
-                <article>
-                    <h3><a href="recipes/cinnamon.html">Nana's Famous Cinnamon Recipe</a></h3>
-                    <p>
-                        A classic recipe from the bakery cookbook.
-                        Read the story behind it and discover the recipe.
-                    </p>
-                </article>
-            </section>
 
-            <section class="support-box">
-                <h2>💌 Need a hand?</h2>
-                <p>Have a question? Visit our customer support room.</p>
-                <a class="button" href="support.html">Customer Support</a>
-            </section>
-        </main>
+    </main>
 
-        <footer>
-            <p>© 2007 Nana Julian's Bakery</p>
-            <p>Best viewed with a cup of tea ☕</p>
-        </footer>
+    <footer><p>© Nana Julian's Bakery — Best viewed with a cup of tea ☕</p><button id="reset" class="text-button">Reset local game</button></footer>
+  </div>
 
-    </div>
+  <dialog id="reset-dialog">
+    <h2>Start a fresh kingdom?</h2>
+    <p>This clears only the local Bread &amp; Battle save in this browser. It does not alter the live website or any server.</p>
+    <div class="dialog-actions"><button id="cancel-reset" class="button">Keep playing</button><button id="confirm-reset" class="button danger">Reset game</button></div>
+  </dialog>
 </body>
 </html>

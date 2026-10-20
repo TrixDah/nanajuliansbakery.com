@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#d6d0b8">
+  <title>Nana Julian's Bake A Message</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="assets/community.js" defer></script>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="logo">📯 Nana Julian's Bake A Message 🥖</div>
+      <p class="tagline">The Village Noticeboard — pin a note, mind the crumbs</p>
+      <nav aria-label="Main navigation">
+        <a href="index.html">Kingdom Map</a>
+        <a href="index.html#how-to-play">How to Play</a>
+        <a href="index.html#leaderboard">Bread Hoard</a>
+        <a href="daily-bread.html">Nana Julian's Daily Bread</a>
+        <a href="bake-a-message.html" aria-current="page">Nana Julian's Bake A Message</a>
+      </nav>
+    </header>
+    <main>
+      <section class="welcome">
+        <div class="blink-label">★ NOTICEBOARD OPEN ★</div>
+        <h1>Leave a Message for the Flourlands</h1>
+        <p>Pin a friendly note, announce a bake sale, or spread harmless village gossip.</p>
+        <div class="save-warning">LOCAL NOTICEBOARD: messages are saved only in this browser. They are not sent to other players or uploaded to a server.</div>
+      </section>
+      <section class="old-box community-page">
+        <form id="message-form" class="message-form">
+          <label for="message-name">Baker's name</label>
+          <input id="message-name" name="name" maxlength="32" placeholder="Anonymous Baker" autocomplete="nickname">
+          <label for="message-body">Your message</label>
+          <textarea id="message-body" name="message" maxlength="280" rows="3" required placeholder="Pin your notice to the board..."></textarea>
+          <div class="message-form-footer"><small>280 characters maximum</small><button class="button" type="submit">Pin Message</button></div>
+          <p id="message-feedback" class="tiny-note" role="status" aria-live="polite"></p>
+        </form>
+        <h2>Messages from the Flourlands</h2>
+        <p id="message-board-empty" class="paper-notice">The board is empty. Be the first to leave a note.</p>
+        <ol id="message-list" class="message-list" aria-live="polite"></ol>
+      </section>
+    </main>
+    <footer><p>© Nana Julian's Bakery — Keep it kind, keep it crumbly ☕</p><a href="index.html">Return to the kingdom</a></footer>
+  </div>
+</body>
+</html>
